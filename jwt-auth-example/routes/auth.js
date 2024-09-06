@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const router = express.Router();
 
+const saltRounds = 10; // Define salt rounds here
+
 // Register Route (POST)
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -17,7 +19,7 @@ router.post('/register', async (req, res) => {
         // Create a new user
         user = new User({
             username,
-            password: await bcrypt.hash(password, 10)
+            password: await bcrypt.hash(password, saltRounds)
         });
 
         await user.save();
@@ -73,7 +75,7 @@ router.post('/users', async (req, res) => {
 
         user = new User({
             username,
-            password: await bcrypt.hash(password, 10)
+            password: await bcrypt.hash(password, saltRounds)
         });
 
         await user.save();
@@ -96,7 +98,7 @@ router.patch('/users/:id', async (req, res) => {
 
         user.username = username || user.username;
         if (password) {
-            user.password = await bcrypt.hash(password, 10);
+            user.password = await bcrypt.hash(password, saltRounds);
         }
 
         await user.save();
